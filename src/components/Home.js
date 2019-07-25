@@ -9,21 +9,17 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import FormHelperText from '@material-ui/core/FormHelperText';
+
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 
-
+import DataRecords from './DataRecords'
 
 import * as firebase from "firebase/app";
 
@@ -44,16 +40,25 @@ firebase.initializeApp(firebaseConfig);
 class Home extends React.Component {
 
     state = {
-        id: '',
-        firstName: '',
-        lastName: '',
-        address: '',
-        email: '',
-        telefono: '',
-        sexo: '',
-        fecha_nacimiento: '',
 
-        registros: [],
+        employee: {
+            id: '',
+            basic: {
+                name: '',
+                email: '',
+                address: '',
+                phone: '',
+                gender: '',
+                birthdate: ''
+            },
+            job: {
+                title: '',
+                salary: ''
+            },
+            status: false
+        },
+
+        employees: [],
         open: false,
         setOpen: false,
         nodata: false,
@@ -65,50 +70,85 @@ class Home extends React.Component {
     }
 
     cargarData() {
-        firebase.database().ref('frm01').on('value', snapshot => {
+
+        firebase.database().ref('frm01/').on('value', snapshot => {
             const data = snapshot.val();
+
             if (data != null) {
-                this.setState({ registros: data });
+                this.setState({ employees: data });
             } else {
                 this.setState({ nodata: true });
             }
         });
+
     }
 
 
     onSubmit = (e) => {
         e.preventDefault();
 
-        if (this.state.id === '') {
-            var newFrm = {
-                id: this.state.registros.length,
-                firstName: this.state.firstName,
-                lastName: this.state.lastName,
-                address: this.state.address,
-                email: this.state.email,
-                fecha_nacimiento: this.state.fecha_nacimiento,
-                telefono: this.state.telefono,
-                sexo: this.state.sexo
+        if (this.state.employee.id === '') {
+            var newEmployee = {
+                employee: {
+                    basic: {
+                        name: this.state.employee.basic.name,
+                        email: this.state.employee.basic.email,
+                        address: this.state.employee.basic.address,
+                        phone: this.state.employee.basic.phone,
+                        gender: this.state.employee.basic.gender,
+                        birthdate: this.state.employee.basic.birthdate
+                    },
+                    job: {
+                        title: this.state.employee.job.title,
+                        salary: this.state.employee.job.salary
+                    },
+                    id: this.state.employees.length,
+                    status: this.state.employee.status
+                }
+
             }
         } else {
-            var newFrm = {
-                id: this.state.id,
-                firstName: this.state.firstName,
-                lastName: this.state.lastName,
-                address: this.state.address,
-                email: this.state.email,
-                fecha_nacimiento: this.state.fecha_nacimiento,
-                telefono: this.state.telefono,
-                sexo: this.state.sexo
+            var newEmployee = {
+                employee: {
+                    basic: {
+                        name: this.state.employee.basic.name,
+                        email: this.state.employee.basic.email,
+                        address: this.state.employee.basic.address,
+                        phone: this.state.employee.basic.phone,
+                        gender: this.state.employee.basic.gender,
+                        birthdate: this.state.employee.basic.birthdate
+                    },
+                    job: {
+                        title: this.state.employee.job.title,
+                        salary: this.state.employee.job.salary
+                    },
+                    id: this.state.employee.id,
+                    status: this.state.employee.status
+                }
+
             }
         }
 
-        console.log(newFrm.id);
+
+        firebase.database().ref('frm01/' + newEmployee.employee.id).set(newEmployee);
+
+        this.setState(prevState => ({ employee: { ...prevState.employee, id: '' } }))
+
+        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, name: '' } } }))
+        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, phone: '' } } }))
+        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, birthdate: '' } } }))
+        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, email: '' } } }))
+        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, gender: '' } } }))
+        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, address: '' } } }))
+        this.setState(prevState => ({ employee: { ...prevState.employee, job: { ...prevState.employee.job, title: '' } } }))
+
+        this.setState(prevState => ({ employee: { ...prevState.employee, job: { ...prevState.employee.job, salary: '' } } }))
 
 
-        firebase.database().ref('frm01/' + newFrm.id).set(newFrm);
+        this.setState({ open: true, setOpen: true, nodata: false, titleButton: 'Guardar' });
 
-        this.setState({ firstName: '', lastName: '', address: '', email: '', fecha_nacimiento: '', telefono: '', sexo: '', open: true, setOpen: true, nodata: false, titleButton: 'Guardar', id: '' });
+
+        console.log("Name: " + this.state.employee.basic.name);
 
     }
 
@@ -122,20 +162,11 @@ class Home extends React.Component {
 
     handleEdit = (id) => {
 
-
         firebase.database().ref('frm01/' + id).on('value', snapshot => {
             const data = snapshot.val();
-            this.setState({
-                id: data.id,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                email: data.email,
-                telefono: data.telefono,
-                fecha_nacimiento: data.fecha_nacimiento,
-                sexo: data.sexo,
-                titleButton: 'Editar'
-            });
+
+            this.setState({ employee: data.employee, titleButton: 'Editar' });
+
         });
 
 
@@ -144,9 +175,19 @@ class Home extends React.Component {
 
     onChange = (e) => {
         const { name, value } = e.target;
-        this.setState({ [name]: value });
+        this.setState({ employee: { ...this.state.employee, basic: { ...this.state.employee.basic, [name]: value } } });
     }
 
+
+    onChangeJob = (e) => {
+        const { name, value } = e.target;
+
+
+        this.setState({ employee: { ...this.state.employee, job: { ...this.state.employee.job, [name]: value } } });
+
+
+
+    }
 
     handleClose = () => {
 
@@ -155,40 +196,9 @@ class Home extends React.Component {
 
 
     render() {
-
-        if (this.state.nodata == false) {
-            var datarow = this.state.registros.map(row => {
-                return (
-                    <TableRow key={row.id}>
-                        <TableCell component="th" scope="row">
-                            {row.firstName}
-                        </TableCell>
-
-                        <TableCell align="left">{row.lastName}</TableCell>
-                        <TableCell align="left">{row.email}</TableCell>
-                        
-                        <TableCell align="right">
-                            <Button size="small" variant="outlined" color="primary" onClick={() => this.handleEdit(row.id)}>
-                                Editar
-                                </Button>
-                            <Button style={{ marginLeft: "10px" }} size="small" variant="outlined" color="secondary" onClick={() => this.handleDelete(row.id)}>
-                                Eliminar
-                                </Button>
-                        </TableCell>
-                    </TableRow>
-                )
-            })
-
-
-        } else {
-            var datarow = "No data";
-        }
-
         return (
             <React.Fragment>
                 <Container maxWidth="lg" style={{ paddingTop: "50px" }}>
-
-
                     <Grid container spacing={3}>
 
                         <Grid item xs={12} sm={6} >
@@ -198,26 +208,17 @@ class Home extends React.Component {
                             <form onSubmit={this.onSubmit}>
                                 <Grid container spacing={3}>
 
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid item xs={12} sm={12}>
                                         <TextField onChange={this.onChange}
                                             required
-                                            id="firstName"
-                                            name="firstName"
-                                            label="Nombres"
+                                            id="name"
+                                            name="name"
+                                            label="Nombre Completo"
                                             fullWidth
-                                            value={this.state.firstName}
+                                            value={this.state.employee.basic.name}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField onChange={this.onChange}
-                                            required
-                                            id="lastName"
-                                            name="lastName"
-                                            label="Apellidos"
-                                            fullWidth
-                                            value={this.state.lastName}
-                                        />
-                                    </Grid>
+
 
                                     <Grid item xs={12} sm={6}>
                                         <TextField onChange={this.onChange}
@@ -227,17 +228,17 @@ class Home extends React.Component {
                                             label="Email"
                                             type="email"
                                             fullWidth
-                                            value={this.state.email}
+                                            value={this.state.employee.basic.email}
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <TextField onChange={this.onChange}
                                             required
-                                            id="telefono"
-                                            name="telefono"
+                                            id="phone"
+                                            name="phone"
                                             label="Teléfono"
                                             fullWidth
-                                            value={this.state.telefono}
+                                            value={this.state.employee.basic.phone}
                                         />
                                     </Grid>
 
@@ -248,21 +249,21 @@ class Home extends React.Component {
                                             name="address"
                                             label="Dirección"
                                             fullWidth
-                                            value={this.state.address}
+                                            value={this.state.employee.basic.address}
                                         />
                                     </Grid>
 
 
 
                                     <Grid item xs={12} sm={6}>
-                                        <InputLabel htmlFor="fecha_nacimiento">Fecha Nacimiento</InputLabel>
-                                        <Select name="fecha_nacimiento"
+                                        <InputLabel htmlFor="birthdate">Fecha Nacimiento</InputLabel>
+                                        <Select name="birthdate"
                                             fullWidth
-                                            value={this.state.fecha_nacimiento}
+                                            value={this.state.employee.basic.birthdate}
                                             onChange={this.onChange}
                                             inputProps={{
-                                                name: 'fecha_nacimiento',
-                                                id: 'fecha_nacimiento',
+                                                name: 'birthdate',
+                                                id: 'birthdate',
                                             }}
                                         >
 
@@ -272,12 +273,12 @@ class Home extends React.Component {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <FormControl component="fieldset" >
-                                            <FormLabel component="legend">Sexo</FormLabel>
+                                            <FormLabel component="legend">Genero</FormLabel>
                                             <RadioGroup
-                                                aria-label="Sexo"
-                                                name="sexo"
+                                                aria-label="gender"
+                                                name="gender"
 
-                                                value={this.state.sexo}
+                                                value={this.state.employee.basic.gender}
                                                 onChange={this.onChange}
                                             >
                                                 <FormControlLabel value="femenino" control={<Radio />} label="Femenino" />
@@ -287,6 +288,35 @@ class Home extends React.Component {
                                         </FormControl>
                                     </Grid>
 
+
+
+                                    <Grid item xs={12} sm={6}>
+                                        <InputLabel htmlFor="title">Cargo a desempeñar</InputLabel>
+                                        <Select name="title"
+                                            fullWidth
+                                            value={this.state.employee.job.title}
+                                            onChange={this.onChangeJob}
+                                            inputProps={{
+                                                name: 'title',
+                                                id: 'title',
+                                            }}
+                                        >
+                                            <MenuItem value={'Programador'}> Programador </MenuItem>
+                                            <MenuItem value={'Diseñador'}> Diseñador </MenuItem>
+                                            <MenuItem value={'Community Manager'}> Community Manager </MenuItem>
+                                        </Select>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField onChange={this.onChangeJob}
+                                            required
+                                            id="salary"
+                                            name="salary"
+                                            label="Salario pretendido"
+                                            fullWidth
+                                            value={this.state.employee.job.salary}
+                                        />
+                                    </Grid>
 
                                     <Grid item xs={12}>
                                         <FormControlLabel
@@ -305,40 +335,15 @@ class Home extends React.Component {
                         </Grid>
                         <Grid item xs={12} sm={6} style={{ backgroundColor: "#f5f5f5" }}>
 
+                            <Typography variant="h6" gutterBottom> Registros </Typography>
 
-                            <Typography variant="h6" gutterBottom>
-                                Registros
-                                                </Typography>
-
-
-
-
-                            <Table >
-                                <TableHead>
-                                    <TableRow>
-
-                                        <TableCell align="left">Nombres</TableCell>
-                                        <TableCell align="left">Apellidos</TableCell>
-                                        <TableCell align="left">Email</TableCell>
-<TableCell align="right">Acciones</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-
-                                    {datarow}
-
-                                </TableBody>
-
-
-                            </Table>
-
+                            <DataRecords handleEdit={this.handleEdit} Nodata={this.state.nodata} Employees={this.state.employees} />
 
                         </Grid>
 
                     </Grid>
 
                 </Container>
-
 
                 <Dialog
                     open={this.state.open}
