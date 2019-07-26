@@ -107,7 +107,6 @@ class Home extends React.Component {
                     id: this.state.employees.length,
                     status: employee.status
                 }
-
             }
         } else {
             var newEmployee = {
