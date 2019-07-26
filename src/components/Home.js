@@ -87,9 +87,11 @@ class Home extends React.Component {
     onSubmit = (e) => {
         e.preventDefault();
 
-        const {employee} = this.state;
+        const { employee } = this.state;
 
-        if (this.state.employee.id === '') {
+        const id = employee.id === '' ? this.state.employees.length :  employee.id;
+
+     
             var newEmployee = {
                 employee: {
                     basic: {
@@ -104,45 +106,17 @@ class Home extends React.Component {
                         title: employee.job.title,
                         salary: employee.job.salary
                     },
-                    id: this.state.employees.length,
+                    id: id,
                     status: employee.status
                 }
             }
-        } else {
-            var newEmployee = {
-                employee: {
-                    basic: {
-                        name: employee.basic.name,
-                        email: employee.basic.email,
-                        address: employee.basic.address,
-                        phone: employee.basic.phone,
-                        gender: employee.basic.gender,
-                        birthdate: employee.basic.birthdate
-                    },
-                    job: {
-                        title: employee.job.title,
-                        salary: employee.job.salary
-                    },
-                    id: employee.id,
-                    status: employee.status
-                }
-
-            }
-        }
+        
 
 
         firebase.database().ref('frm01/' + newEmployee.employee.id).set(newEmployee);
 
-        
+        this.setState(prevState => ({ open: true, setOpen: true, nodata: false, titleButton: 'Guardar', employee: { ...prevState.employee, id: '' }, employee: { ...prevState.employee, basic: { ...prevState.employee.basic, name: '', phone: '', birthdate: '', email: '', gender: '', address: '' }, employee: { ...prevState.employee, job: { ...prevState.employee.job, title: '', salary: '' } } } }))
 
-
-        this.setState(prevState => ({ open: true, setOpen: true, nodata: false, titleButton: 'Guardar',employee: { ...prevState.employee, id: '' },employee: { ...prevState.employee, basic: { ...prevState.employee.basic, name: '',phone: '', birthdate: '',email: '', gender: '', address: '' },employee: { ...prevState.employee, job: { ...prevState.employee.job, title: '', salary: '' } } }  }))
-
-        
-
-
-       
-        console.log("Name: " + this.state.employee.basic.name);
 
     }
 
