@@ -106,7 +106,7 @@ class Home extends React.Component {
                         title: employee.job.title,
                         salary: employee.job.salary
                     },
-                    id: id,
+                    id,
                     status: employee.status
                 }
             }
