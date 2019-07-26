@@ -104,7 +104,7 @@ class Home extends React.Component {
                         title: employee.job.title,
                         salary: employee.job.salary
                     },
-                    id: employee.length,
+                    id: this.state.employees.length,
                     status: employee.status
                 }
 
@@ -137,19 +137,12 @@ class Home extends React.Component {
         
 
 
+        this.setState(prevState => ({ open: true, setOpen: true, nodata: false, titleButton: 'Guardar',employee: { ...prevState.employee, id: '' },employee: { ...prevState.employee, basic: { ...prevState.employee.basic, name: '',phone: '', birthdate: '',email: '', gender: '', address: '' },employee: { ...prevState.employee, job: { ...prevState.employee.job, title: '', salary: '' } } }  }))
 
-        this.setState(prevState => ({ employee: { ...prevState.employee, id: '' } }))
-
-        this.setState(prevState => ({ employee: { ...prevState.employee, basic: { ...prevState.employee.basic, name: '',phone: '', birthdate: '',email: '', gender: '', address: '' } } }))
         
-        this.setState(prevState => ({ employee: { ...prevState.employee, job: { ...prevState.employee.job, title: '', salary: '' } } }))
-
-     
 
 
-        this.setState({ open: true, setOpen: true, nodata: false, titleButton: 'Guardar' });
-
-
+       
         console.log("Name: " + this.state.employee.basic.name);
 
     }
