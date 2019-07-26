@@ -21,19 +21,22 @@ class DataRecords extends Component {
                 <TableBody>
                     {!this.props.Nodata ?
                         this.props.Employees.map(row => {
+
+                            const { employee } = row;
+
                             return (
-                                <TableRow key={row.employee.id}>
+                                <TableRow key={employee.id}>
                                     <TableCell component="th" scope="row">
-                                        {row.employee.basic.name}
+                                        {employee.basic.name}
                                     </TableCell>
 
-                                    <TableCell align="left">{row.employee.basic.email}</TableCell>
+                                    <TableCell align="left">{employee.basic.email}</TableCell>
 
                                     <TableCell align="right">
-                                        <Button size="small" variant="outlined" color="primary" onClick={() => this.props.handleEdit(row.employee.id)}>
+                                        <Button size="small" variant="outlined" color="primary" onClick={() => this.props.handleEdit(employee.id)}>
                                             Ver/Editar
                                                             </Button>
-                                        <Button style={{ marginLeft: "10px" }} size="small" variant="outlined" color="secondary" onClick={() => this.handleDelete(row.employee.id)}>
+                                        <Button style={{ marginLeft: "10px" }} size="small" variant="outlined" color="secondary" onClick={() => this.handleDelete(employee.id)}>
                                             Eliminar
                                                             </Button>
                                     </TableCell>
